@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: results-app
-        image: ${RESULT_APP}:${APP_TAG}
+        image: ${RESULT_APP}:latest
         resources:
           limits:
             memory: "256Mi"

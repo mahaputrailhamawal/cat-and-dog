@@ -61,7 +61,6 @@ jobs:
             echo "RESULT_APP=${DOCKERHUB_USERNAME}/${RESULT_APP_PATH}" >> .env
             echo "VOTE_APP=${DOCKERHUB_USERNAME}/${VOTE_APP_PATH}" >> .env
             echo "VOTE_WORKER=${DOCKERHUB_USERNAME}/${VOTE_WORKER_PATH}" >> .env 
-            echo "APP_TAG=latest" >> .env
 
             # Run K8s Manifest
             source .env
