@@ -20,7 +20,7 @@ jobs:
           VOTE_WORKER_PATH: ${{ vars.VOTE_WORKER_PATH }}
           VOTE_APP_PATH: ${{ vars.VOTE_APP_PATH }}
           RESULT_APP_PATH: ${{ vars.RESULT_APP_PATH }}
-          APP_TAG: ${{ github.event.release.tag_name }}
+          # APP_TAG: ${{ github.event.release.tag_name }}
           IP_PROD1: ${{ secrets.IP_PROD1 }}
           GIT_URL: ${{ vars.GIT_URL }}
           APP_PATH_PROD: ${{ vars.APP_PATH_PROD }}
@@ -29,7 +29,7 @@ jobs:
           host: ${{ secrets.SSH_HOST_PROD }}
           username: ${{ secrets.SSH_USER_NAME_PROD }}
           key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
-          envs: IP_PROD1, GIT_URL, APP_PATH_PROD, RESULT_APP_PATH, VOTE_APP_PATH, VOTE_WORKER_PATH, DOCKERHUB_TOKEN, DOCKERHUB_USERNAME, APP_TAG
+          envs: IP_PROD1, GIT_URL, APP_PATH_PROD, RESULT_APP_PATH, VOTE_APP_PATH, VOTE_WORKER_PATH, DOCKERHUB_TOKEN, DOCKERHUB_USERNAME
           script: |
 
             sudo docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
@@ -61,7 +61,7 @@ jobs:
             echo "RESULT_APP=${DOCKERHUB_USERNAME}/${RESULT_APP_PATH}" >> .env
             echo "VOTE_APP=${DOCKERHUB_USERNAME}/${VOTE_APP_PATH}" >> .env
             echo "VOTE_WORKER=${DOCKERHUB_USERNAME}/${VOTE_WORKER_PATH}" >> .env 
-            echo "APP_TAG=$APP_TAG" >> .env
+            echo "APP_TAG=latest" >> .env
 
             # Run K8s Manifest
             source .env

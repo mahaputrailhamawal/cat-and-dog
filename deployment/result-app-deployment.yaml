@@ -17,7 +17,7 @@ spec:
         image: ${RESULT_APP}:${APP_TAG}
         resources:
           limits:
-            memory: "1024Mi"
-            cpu: "500m"
+            memory: "256Mi"
+            cpu: "150m"
         ports:
         - containerPort: 80
