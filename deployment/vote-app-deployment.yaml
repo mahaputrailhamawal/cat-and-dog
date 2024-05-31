@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: vote-app
-        image: ${VOTE_APP}:latest
+        image: moose3345/cnd-vote-app:latest
         env:
         - name: WEB_VOTE_NUMBER
           value: "01"

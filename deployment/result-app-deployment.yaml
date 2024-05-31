@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: results-app
-        image: ${RESULT_APP}:latest
+        image: moose3345/cnd-result-app:latest
         resources:
           limits:
             memory: "256Mi"
