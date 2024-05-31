@@ -1,0 +1,32 @@
+name: Dev Testing 🔎
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-testing:
+    name: Build and Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Build and Run K8S
+        run: |
+          kubectl apply -f deployment/postgres-deployment.yaml
+          kubectl apply -f deployment/postgres-service.yaml
+          kubectl apply -f deployment/redis-deployment.yaml
+          kubectl apply -f deployment/redis-service.yaml
+          kubectl apply -f deployment/result-app-deployment.yaml
+          kubectl apply -f deployment/result-app-service.yaml
+          kubectl apply -f deployment/vote-worker-deployment.yaml
+          kubectl apply -f deployment/vote-worker-service.yaml
+          kubectl apply -f deployment/vote-app-deployment.yaml
+          kubectl apply -f deployment/vote-app-service.yaml
+          kubectl apply -f deployment/ingress-dev.yaml
+      
+      - name: Hit Endpoint
+        run: |
+          sleep 20
+          curl ${{ vars.DEV_URL }}
