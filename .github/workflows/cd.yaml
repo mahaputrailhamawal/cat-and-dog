@@ -29,7 +29,7 @@ jobs:
           host: ${{ secrets.SSH_HOST_PROD }}
           username: ${{ secrets.SSH_USER_NAME_PROD }}
           key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
-          envs: IP_PROD1, GIT_URL, RESULT_APP_PATH, VOTE_APP_PATH, VOTE_WORKER_PATH, DOCKERHUB_TOKEN, DOCKERHUB_USERNAME, APP_TAG
+          envs: IP_PROD1, GIT_URL, APP_PATH_PROD, RESULT_APP_PATH, VOTE_APP_PATH, VOTE_WORKER_PATH, DOCKERHUB_TOKEN, DOCKERHUB_USERNAME, APP_TAG
           script: |
 
             sudo docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
