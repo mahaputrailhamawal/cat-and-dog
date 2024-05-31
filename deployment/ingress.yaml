@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: ${IP_PROD1}
+  - host: app1.putra988.my.id
     http:
       paths:
       - path: "/"
