@@ -35,7 +35,18 @@ jobs:
 
             if [[ -d "/home/ubuntu/${APP_PATH_PROD}" ]]; then 
               cd /home/ubuntu/$APP_PATH_PROD/deployment
-              sudo docker compose down
+              sudo kubectl delete ingress ingress-prod
+              sudo kubectl delete deployment postgresql
+              sudo kubectl delete svc store
+              sudo kubectl delete deployment redis-app
+              sudo kubectl delete svc redis01
+              sudo kubectl delete deployment results-app
+              sudo kubectl delete svc results-app-service
+              sudo kubectl delete deployment vote-app
+              sudo kubectl delete svc vote-app-service
+              sudo kubectl delete deployment vote-worker
+              sudo kubectl delete svc worker-service
+
               git stash
               git pull --rebase
             else
@@ -46,7 +57,6 @@ jobs:
 
             # If there are any envars update
             echo "IP_PROD1=$IP_PROD1" > deployment/.env 
-            echo "GIT_URL=$GIT_URL" >> deployment/.env
             echo "RESULT_APP=${DOCKERHUB_USERNAME}/${RESULT_APP_PATH}" >> deployment/.env
             echo "VOTE_APP=${DOCKERHUB_USERNAME}/${VOTE_APP_PATH}" >> deployment/.env
             echo "VOTE_WORKER=${DOCKERHUB_USERNAME}/${VOTE_WORKER_PATH}" >> deployment/.env 
@@ -55,19 +65,19 @@ jobs:
             # Run K8s Manifest
             source .env
             
-            kubectl apply -f postgres-deployment.yaml
-            kubectl apply -f postgres-service.yaml
+            sudo kubectl apply -f postgres-deployment.yaml
+            sudo kubectl apply -f postgres-service.yaml
 
-            kubectl apply -f redis-deployment.yaml
-            kubectl apply -f redis-service.yaml
+            sudo kubectl apply -f redis-deployment.yaml
+            sudo kubectl apply -f redis-service.yaml
 
-            envsubst < result-app-deployment.yaml | kubectl apply -f -
-            kubectl apply -f result-app-service.yaml
+            envsubst < result-app-deployment.yaml | sudo kubectl apply -f -
+            sudo kubectl apply -f result-app-service.yaml
             
-            envsubst < vote-worker-deployment.yaml | kubectl apply -f -
-            kubectl apply -f vote-worker-service.yaml
+            envsubst < vote-worker-deployment.yaml | sudo kubectl apply -f -
+            sudo kubectl apply -f vote-worker-service.yaml
             
-            envsubst < vote-app-deployment.yaml | kubectl apply -f -
-            kubectl apply -f vote-app-service.yaml
+            envsubst < vote-app-deployment.yaml | sudo kubectl apply -f -
+            sudo kubectl apply -f vote-app-service.yaml
             
-            envsubst < ingress.yaml | kubectl apply -f -
+            envsubst < ingress.yaml | sudo kubectl apply -f -
