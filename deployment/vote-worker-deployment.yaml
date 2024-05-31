@@ -21,7 +21,7 @@ spec:
           value: "1"
         resources:
           limits:
-            memory: "1024Mi"
-            cpu: "500m"
+            memory: "256Mi"
+            cpu: "200m"
         ports:
         - containerPort: 8080
