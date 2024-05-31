@@ -1,32 +1,54 @@
-name: Dev Testing 🔎
+name: Push Container Registry 🛒
 
-on:
-  pull_request:
-    branches: ["main"]
+on:  
+  push:
+    tags:
+      - '*'
 
 jobs:
-  build-testing:
-    name: Build and Testing
+  build-push:
+    name: Push Image To Container Registry 🛒
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       
-      - name: Build and Run K8S
-        run: |
-          kubectl apply -f deployment/postgres-deployment.yaml
-          kubectl apply -f deployment/postgres-service.yaml
-          kubectl apply -f deployment/redis-deployment.yaml
-          kubectl apply -f deployment/redis-service.yaml
-          kubectl apply -f deployment/result-app-deployment.yaml
-          kubectl apply -f deployment/result-app-service.yaml
-          kubectl apply -f deployment/vote-worker-deployment.yaml
-          kubectl apply -f deployment/vote-worker-service.yaml
-          kubectl apply -f deployment/vote-app-deployment.yaml
-          kubectl apply -f deployment/vote-app-service.yaml
-          kubectl apply -f deployment/ingress-dev.yaml
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       
-      - name: Hit Endpoint
-        run: |
-          sleep 20
-          curl ${{ vars.DEV_URL }}
+      - name: Push current & latest result-app
+        uses: docker/build-push-action@v5
+        with:
+          context: ./results-app
+          file: ./results-app/Dockerfile
+          push: true
+          tags: | 
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.RESULT_APP_PATH }}:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.RESULT_APP_PATH }}:latest
+      
+      - name: Push current & latest vote-app
+        uses: docker/build-push-action@v5
+        with:
+          context: ./web-vote-app
+          file: ./web-vote-app/Dockerfile
+          push: true
+          tags: | 
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.VOTE_APP_PATH }}:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.VOTE_APP_PATH }}:latest
+      
+      - name: Push current & latest vote-worker
+        uses: docker/build-push-action@v5
+        with:
+          context: ./vote-worker
+          file: ./vote-worker/Dockerfile
+          push: true
+          tags: | 
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.VOTE_WORKER_PATH }}:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.VOTE_WORKER_PATH }}:latest
