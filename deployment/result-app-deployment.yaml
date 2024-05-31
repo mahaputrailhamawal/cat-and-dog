@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: results-app
-        image: moose3345/result-app:v1
+        image: ${APP_IMAGE_RESULT}:${APP_TAG}
         resources:
           limits:
             memory: "1024Mi"

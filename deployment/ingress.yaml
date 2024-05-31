@@ -1,9 +1,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-dev
+  name: ingress-prod
   labels:
-    name: ingress-dev
+    name: ingress-prod
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:

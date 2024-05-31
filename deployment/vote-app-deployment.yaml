@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: vote-app
-        image: moose3345/vote-app:v1
+        image: ${APP_IMAGE_VOTE_APP}:${APP_TAG}
         env:
         - name: WEB_VOTE_NUMBER
           value: "01"
