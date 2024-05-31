@@ -1,0 +1,73 @@
+name: Deploy Production 🚀
+
+on:
+  release:
+    types:
+      - published
+      - edited
+
+jobs:
+  deploy-production1:
+    name: Deploy to production server1 🚀
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Execute deployment command
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          VOTE_WORKER_PATH: ${{ vars.VOTE_WORKER_PATH }}
+          VOTE_APP_PATH: ${{ vars.VOTE_APP_PATH }}
+          RESULT_APP_PATH: ${{ vars.RESULT_APP_PATH }}
+          APP_TAG: ${{ github.event.release.tag_name }}
+          IP_PROD1: ${{ secrets.IP_PROD1 }}
+          GIT_URL: ${{ vars.GIT_URL }}
+
+        with:
+          host: ${{ secrets.SSH_HOST_PROD }}
+          username: ${{ secrets.SSH_USER_NAME_PROD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+          envs: IP_PROD1, GIT_URL, RESULT_APP_PATH, VOTE_APP_PATH, VOTE_WORKER_PATH, DOCKERHUB_TOKEN, DOCKERHUB_USERNAME, APP_TAG
+          script: |
+
+            sudo docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_TOKEN
+
+            if [[ -d "/home/ubuntu/${APP_PATH_PROD}" ]]; then 
+              cd /home/ubuntu/$APP_PATH_PROD/deployment
+              sudo docker compose down
+              git stash
+              git pull --rebase
+            else
+              ssh-keyscan github.com > ~/.ssh/known_hosts
+              git clone $GIT_URL /home/ubuntu/$APP_PATH_PROD
+              cd /home/ubuntu/$APP_PATH_PROD/deployment
+            fi
+
+            # If there are any envars update
+            echo "IP_PROD1=$IP_PROD1" > deployment/.env 
+            echo "GIT_URL=$GIT_URL" >> deployment/.env
+            echo "RESULT_APP=${DOCKERHUB_USERNAME}/${RESULT_APP_PATH}" >> deployment/.env
+            echo "VOTE_APP=${DOCKERHUB_USERNAME}/${VOTE_APP_PATH}" >> deployment/.env
+            echo "VOTE_WORKER=${DOCKERHUB_USERNAME}/${VOTE_WORKER_PATH}" >> deployment/.env 
+            echo "APP_TAG=$APP_TAG" >> .env
+
+            # Run K8s Manifest
+            source .env
+            
+            kubectl apply -f postgres-deployment.yaml
+            kubectl apply -f postgres-service.yaml
+
+            kubectl apply -f redis-deployment.yaml
+            kubectl apply -f redis-service.yaml
+
+            envsubst < result-app-deployment.yaml | kubectl apply -f -
+            kubectl apply -f result-app-service.yaml
+            
+            envsubst < vote-worker-deployment.yaml | kubectl apply -f -
+            kubectl apply -f vote-worker-service.yaml
+            
+            envsubst < vote-app-deployment.yaml | kubectl apply -f -
+            kubectl apply -f vote-app-service.yaml
+            
+            envsubst < ingress.yaml | kubectl apply -f -
