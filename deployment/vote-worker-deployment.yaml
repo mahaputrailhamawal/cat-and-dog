@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote-worker
+spec:
+  selector:
+    matchLabels:
+      app: vote-worker
+  template:
+    metadata:
+      labels:
+        app: vote-worker
+    spec:
+      containers:
+      - name: vote-worker
+        image: moose3345/vote-worker:v1
+        env:
+        - name: FROM_REDIS_HOST
+          value: "1"
+        - name: TO_REDIS_HOST
+          value: "1"
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080

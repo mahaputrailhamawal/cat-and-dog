@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: results-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: results-app
+  template:
+    metadata:
+      labels:
+        app: results-app
+    spec:
+      containers:
+      - name: results-app
+        image: moose3345/result-app:v1
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
