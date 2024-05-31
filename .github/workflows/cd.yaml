@@ -23,6 +23,7 @@ jobs:
           APP_TAG: ${{ github.event.release.tag_name }}
           IP_PROD1: ${{ secrets.IP_PROD1 }}
           GIT_URL: ${{ vars.GIT_URL }}
+          APP_PATH_PROD: ${{ vars.APP_PATH_PROD }}
 
         with:
           host: ${{ secrets.SSH_HOST_PROD }}
@@ -56,10 +57,10 @@ jobs:
             fi
 
             # If there are any envars update
-            echo "IP_PROD1=$IP_PROD1" > deployment/.env 
-            echo "RESULT_APP=${DOCKERHUB_USERNAME}/${RESULT_APP_PATH}" >> deployment/.env
-            echo "VOTE_APP=${DOCKERHUB_USERNAME}/${VOTE_APP_PATH}" >> deployment/.env
-            echo "VOTE_WORKER=${DOCKERHUB_USERNAME}/${VOTE_WORKER_PATH}" >> deployment/.env 
+            echo "IP_PROD1=$IP_PROD1" > .env 
+            echo "RESULT_APP=${DOCKERHUB_USERNAME}/${RESULT_APP_PATH}" >> .env
+            echo "VOTE_APP=${DOCKERHUB_USERNAME}/${VOTE_APP_PATH}" >> .env
+            echo "VOTE_WORKER=${DOCKERHUB_USERNAME}/${VOTE_WORKER_PATH}" >> .env 
             echo "APP_TAG=$APP_TAG" >> .env
 
             # Run K8s Manifest
